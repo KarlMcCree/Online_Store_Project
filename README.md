@@ -54,13 +54,3 @@
 
 All tables have Row Level Security (RLS) enabled.
 
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- npm or bun
-- Supabase account
-- Paystack account
-
