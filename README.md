@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-Online_Store_Project
 =======
 
 ##  Overview
@@ -56,5 +54,3 @@ Online_Store_Project
 | `user_roles` | Admin roles |
 
 All tables have Row Level Security (RLS) enabled.
-
->>>>>>> fed97d1b9130dbe6036c242270db141ac7aba002
