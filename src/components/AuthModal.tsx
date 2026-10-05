@@ -46,17 +46,31 @@ const AuthModal = () => {
               <X className="h-5 w-5" />
             </button>
 
-            <div className="text-center mb-6">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
-                <Sparkles className="h-6 w-6 text-secondary" />
-              </div>
-              <h2 className="font-display text-2xl font-bold text-foreground mb-1">
-                {mode === "login" ? "Welcome back" : "Create your account"}
-              </h2>
-              <p className="text-sm text-muted-foreground font-body">
-                {authReason ?? (mode === "login" ? "Sign in to access your dashboard." : "Join thousands shaping their global future.")}
-              </p>
+      <div className="text-center mb-6">
+          {/* Company Logo */}
+          <div className="flex justify-center mb-4">
+            <img
+              src="/logo.png"
+              alt="Online Dynamics & BSB"
+              className="h-14 w-auto object-contain"
+              onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+          </div>
+
+            {/* Fallback icon (if logo missing) */}
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
+              <Sparkles className="h-6 w-6 text-secondary" />
             </div>
+
+            <h2 className="font-display text-2xl font-bold text-foreground mb-1">
+              {mode === "login" ? "Welcome back" : "Create your account"}
+            </h2>
+            <p className="text-sm text-muted-foreground font-body">
+              {authReason ?? (mode === "login" ? "Sign in to access your dashboard." : "Join thousands shaping their global future.")}
+            </p>
+      </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (

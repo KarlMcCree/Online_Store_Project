@@ -63,8 +63,17 @@ const Header = () => {
           </button>
 
           {/* Logo */}
-          <Link to="/" className="flex flex-col items-center">
-            <span className="font-display text-2xl font-bold tracking-tight text-foreground">
+          <Link to="/" className="flex flex-col items-center gap-1">
+            <img
+              src="/logo.png"
+              alt="Online Dynamics & BSB"
+              className="h-10 w-auto object-contain"
+              onError={(e) => {
+              // Fallback if logo not found
+              (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+            <span className="font-display text-lg md:text-xl font-bold tracking-tight text-foreground">
               Online Dynamics & BSB
             </span>
           </Link>

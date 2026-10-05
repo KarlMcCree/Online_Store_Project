@@ -151,24 +151,31 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-surface-warm">
       <SEO
-        title="My Dashboard – The Digital Desk"
+        title="My Dashboard – Online Store"
         description="Manage your orders, downloads, and preferences in your Digital Desk dashboard."
         url="/dashboard"
       />
       {/* Top welcome bar (replaces site header on /dashboard) */}
       <header className="bg-background border-b border-border sticky top-0 z-30">
-        <div className="flex items-center justify-between gap-4 px-4 md:px-8 py-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <Link to="/" className="flex-shrink-0 font-display text-base font-bold text-foreground hidden md:block">
-              OD&BSB
-            </Link>
-            <div className="hidden sm:block min-w-0">
-              <h1 className="font-display text-lg md:text-xl font-bold text-foreground truncate">
-                Welcome, {user.name}
-              </h1>
-              <p className="text-[11px] text-muted-foreground font-body">Your personalized workspace</p>
-            </div>
-          </div>
+
+      <div className="flex items-center gap-3 min-w-0">
+        <Link to="/" className="flex-shrink-0 flex items-center">
+          <img
+            src="/logo.png"
+            alt="Online Dynamics & BSB"
+            className="h-9 w-auto object-contain"
+            onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        </Link>
+        <div className="hidden sm:block min-w-0">
+          <h1 className="font-display text-lg md:text-xl font-bold text-foreground truncate">
+          Welcome, {user.name}
+          </h1>
+          <p className="text-[11px] text-muted-foreground font-body">Your personalized workspace</p>
+        </div>
+      </div>
 
           {showSearch && (
             <div className="flex-1 max-w-md">
