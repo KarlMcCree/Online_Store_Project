@@ -31,8 +31,6 @@ const blogPosts = [
   { id: 4, title: "5 Common Visa Mistakes and How to Avoid Them", category: "Visa Tips", date: "Feb 28, 2025", readTime: "5 min" },
 ];
 
-// REMOVED the hardcoded allProducts — now we fetch from Supabase
-
 const Dashboard = () => {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const {
@@ -47,11 +45,10 @@ const Dashboard = () => {
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [docsOrderFilter, setDocsOrderFilter] = useState<string | null>(null);
 
-  // ----- NEW: state for products from Supabase -----
+  // Products from Supabase
   const [dbProducts, setDbProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
 
-  // ----- NEW: fetch products from Supabase -----
   useEffect(() => {
     if (!user) return;
     const fetchProducts = async () => {
@@ -72,7 +69,6 @@ const Dashboard = () => {
     fetchProducts();
   }, [user]);
 
-  // ----- NEW: order products by interaction count -----
   const orderedProducts = useMemo(() => {
     const interactions = new Map(recentlyViewed.map((r) => [String(r.id), r.interactions]));
     return [...dbProducts].sort((a, b) =>
@@ -80,20 +76,16 @@ const Dashboard = () => {
     );
   }, [dbProducts, recentlyViewed]);
 
-  // ----- NEW: filter by search -----
   const filteredProducts = orderedProducts.filter((p) =>
     !search || p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ----- NEW: map DB products to the shape expected by ProductsPanel -----
   const mappedProducts = filteredProducts.map((p) => ({
     id: p.product_id,
     title: p.name,
     price: p.sale_price ? `NGN${p.sale_price.toLocaleString()}` : `NGN${p.price.toLocaleString()}`,
-    type: p.type === 'service' ? 'service' : 'digital', // default to digital
+    type: p.type === 'service' ? 'service' : 'digital',
   }));
-
-  // ----- END NEW -----
 
   const goToOrderDocs = (orderId: string) => {
     setDocsOrderFilter(orderId);
@@ -155,27 +147,28 @@ const Dashboard = () => {
         description="Manage your orders, downloads, and preferences in your Digital Desk dashboard."
         url="/dashboard"
       />
-      {/* Top welcome bar (replaces site header on /dashboard) */}
-      <header className="bg-background border-b border-border sticky top-0 z-30">
 
-      <div className="flex items-center gap-3 min-w-0">
-        <Link to="/" className="flex-shrink-0 flex items-center">
-          <img
-            src="/logo.png"
-            alt="Online Dynamics & BSB"
-            className="h-9 w-auto object-contain"
-            onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </Link>
-        <div className="hidden sm:block min-w-0">
-          <h1 className="font-display text-lg md:text-xl font-bold text-foreground truncate">
-          Welcome, {user.name}
-          </h1>
-          <p className="text-[11px] text-muted-foreground font-body">Your personalized workspace</p>
-        </div>
-      </div>
+      {/* Top welcome bar */}
+      <header className="bg-background border-b border-border sticky top-0 z-30">
+        <div className="flex items-center justify-between gap-4 px-4 md:px-8 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <img
+                src="/logo.png"
+                alt="Online Dynamics & BSB"
+                className="h-9 w-auto object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+            </Link>
+            <div className="hidden sm:block min-w-0">
+              <h1 className="font-display text-lg md:text-xl font-bold text-foreground truncate">
+                Welcome, {user.name}
+              </h1>
+              <p className="text-[11px] text-muted-foreground font-body">Your personalized workspace</p>
+            </div>
+          </div>
 
           {showSearch && (
             <div className="flex-1 max-w-md">
@@ -195,7 +188,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Main app shell: left icon rail + content + right nav rail */}
+      {/* Main app shell */}
       <div className="flex min-h-[calc(100vh-73px)]">
         {/* LEFT icon rail */}
         <aside className="w-16 bg-background border-r border-border flex flex-col items-center py-6 gap-2 sticky top-[73px] h-[calc(100vh-73px)]">
@@ -208,38 +201,67 @@ const Dashboard = () => {
 
         {/* CENTER content */}
         <main className="flex-1 min-w-0 p-6 md:p-8">
-          {tab === "overview" && <OverviewPanel
-            user={user}
-            preferences={preferences}
-            cartCount={cartCount}
-            favCount={favourites.length}
-            ordersCount={orders.length}
-            docsCount={documents.length}
-            recentlyViewed={recentlyViewed}
-            onOpenPrefs={() => setPrefsOpen(true)}
-            onTab={setTab}
-          />}
+          {tab === "overview" && (
+            <OverviewPanel
+              user={user}
+              preferences={preferences}
+              cartCount={cartCount}
+              favCount={favourites.length}
+              ordersCount={orders.length}
+              docsCount={documents.length}
+              recentlyViewed={recentlyViewed}
+              onOpenPrefs={() => setPrefsOpen(true)}
+              onTab={setTab}
+            />
+          )}
 
           {tab === "blog" && <BlogPanel />}
 
           {tab === "products" && <ProductsPanel products={mappedProducts} loading={productsLoading} />}
 
-          {tab === "cart" && <CartPanel cart={cart} cartSubtotal={cartSubtotal} updateQty={updateQty} removeFromCart={removeFromCart} clearCart={clearCart} checkout={checkout} recentlyViewed={recentlyViewed} />}
+          {tab === "cart" && (
+            <CartPanel
+              cart={cart}
+              cartSubtotal={cartSubtotal}
+              updateQty={updateQty}
+              removeFromCart={removeFromCart}
+              clearCart={clearCart}
+              checkout={checkout}
+              recentlyViewed={recentlyViewed}
+            />
+          )}
 
-          {tab === "favourites" && <FavouritesPanel favourites={favourites} addToCart={addToCart} toggleFavourite={toggleFavourite} recentlyViewed={recentlyViewed} />}
+          {tab === "favourites" && (
+            <FavouritesPanel
+              favourites={favourites}
+              addToCart={addToCart}
+              toggleFavourite={toggleFavourite}
+              recentlyViewed={recentlyViewed}
+            />
+          )}
 
           {tab === "orders" && <OrdersPanel onViewDocs={goToOrderDocs} />}
 
           {tab === "payments" && <PaymentsPanel payments={payments} />}
 
-          {tab === "documents" && <DocumentsPanel documents={documents} downloadDocument={downloadDocument} refillDocument={refillDocument} orderFilter={docsOrderFilter} clearOrderFilter={() => setDocsOrderFilter(null)} />}
+          {tab === "documents" && (
+            <DocumentsPanel
+              documents={documents}
+              downloadDocument={downloadDocument}
+              refillDocument={refillDocument}
+              orderFilter={docsOrderFilter}
+              clearOrderFilter={() => setDocsOrderFilter(null)}
+            />
+          )}
 
           {tab === "settings" && <SettingsPanel onEditPrefs={() => setPrefsOpen(true)} preferences={preferences} />}
         </main>
 
         {/* RIGHT nav rail */}
         <aside className="w-64 bg-background border-l border-border hidden lg:flex flex-col p-4 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-body px-3 mb-2">Workspace</p>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-body px-3 mb-2">
+            Workspace
+          </p>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -275,13 +297,15 @@ const Dashboard = () => {
                 <Sparkles className="h-3.5 w-3.5 text-secondary" />
                 <span className="text-xs font-semibold text-foreground font-body">Personalize</span>
               </div>
-              <p className="text-[11px] text-muted-foreground font-body leading-snug">Tell us your preferences to unlock tailored recommendations.</p>
+              <p className="text-[11px] text-muted-foreground font-body leading-snug">
+                Tell us your preferences to unlock tailored recommendations.
+              </p>
             </button>
           )}
         </aside>
       </div>
 
-      {/* Mobile bottom nav for the right-rail items (since right rail is hidden < lg) */}
+      {/* Mobile bottom nav */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-background border-t border-border z-20 overflow-x-auto">
         <div className="flex">
           {navItems.map((item) => {
@@ -339,7 +363,9 @@ const RailButton = ({
 const OverviewPanel = ({ user, preferences, cartCount, favCount, ordersCount, docsCount, recentlyViewed, onOpenPrefs, onTab }: any) => (
   <div className="space-y-6">
     <div>
-      <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-1">Hi {user.name}, here's your overview</h2>
+      <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-1">
+        Hi {user.name}, here's your overview
+      </h2>
       <p className="text-muted-foreground font-body text-sm">Pick up where you left off, or explore something new.</p>
     </div>
 
@@ -352,7 +378,9 @@ const OverviewPanel = ({ user, preferences, cartCount, favCount, ordersCount, do
           <p className="font-display font-bold text-foreground">Personalize your dashboard</p>
           <p className="text-sm text-muted-foreground font-body">Tell us your destination, study level, and budget for tailored recommendations.</p>
         </div>
-        <button onClick={onOpenPrefs} className="bg-secondary text-secondary-foreground font-semibold px-5 py-2 rounded-full text-sm font-body hover:bg-secondary/90">Set preferences</button>
+        <button onClick={onOpenPrefs} className="bg-secondary text-secondary-foreground font-semibold px-5 py-2 rounded-full text-sm font-body hover:bg-secondary/90">
+          Set preferences
+        </button>
       </div>
     )}
 
@@ -365,8 +393,14 @@ const OverviewPanel = ({ user, preferences, cartCount, favCount, ordersCount, do
 
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2"><Clock className="h-4 w-4 text-secondary" /> Recently interacted</h3>
-        {recentlyViewed.length > 0 && <button onClick={() => onTab("products")} className="text-xs text-secondary font-body flex items-center gap-1">See products <ArrowRight className="h-3 w-3" /></button>}
+        <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+          <Clock className="h-4 w-4 text-secondary" /> Recently interacted
+        </h3>
+        {recentlyViewed.length > 0 && (
+          <button onClick={() => onTab("products")} className="text-xs text-secondary font-body flex items-center gap-1">
+            See products <ArrowRight className="h-3 w-3" />
+          </button>
+        )}
       </div>
       {recentlyViewed.length === 0 ? (
         <div className="bg-background border border-border rounded-xl p-8 text-center">
@@ -379,7 +413,9 @@ const OverviewPanel = ({ user, preferences, cartCount, favCount, ordersCount, do
               <div className="w-10 h-10 rounded-md bg-secondary/10 flex items-center justify-center text-lg">📄</div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-body font-medium text-foreground truncate">{r.title}</p>
-                <p className="text-[11px] text-muted-foreground font-body">{r.interactions} interaction{r.interactions > 1 ? "s" : ""}</p>
+                <p className="text-[11px] text-muted-foreground font-body">
+                  {r.interactions} interaction{r.interactions > 1 ? "s" : ""}
+                </p>
               </div>
             </div>
           ))}
@@ -396,21 +432,26 @@ const BlogPanel = () => (
         <h2 className="font-display text-2xl font-bold text-foreground">From the Blog</h2>
         <p className="text-sm text-muted-foreground font-body">Latest insights from our team.</p>
       </div>
-      <Link to="/blog" className="text-sm text-secondary font-body flex items-center gap-1">View all <ArrowRight className="h-3 w-3" /></Link>
+      <Link to="/blog" className="text-sm text-secondary font-body flex items-center gap-1">
+        View all <ArrowRight className="h-3 w-3" />
+      </Link>
     </div>
     <div className="grid sm:grid-cols-2 gap-4">
       {blogPosts.map((post) => (
         <Link key={post.id} to="/blog" className="block bg-background border border-border rounded-xl p-5 hover:border-secondary transition-colors">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-secondary font-body">{post.category}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-secondary font-body">
+            {post.category}
+          </span>
           <h3 className="font-display text-base font-bold text-foreground mt-2 mb-2">{post.title}</h3>
-          <p className="text-xs text-muted-foreground font-body">{post.date} · {post.readTime}</p>
+          <p className="text-xs text-muted-foreground font-body">
+            {post.date} · {post.readTime}
+          </p>
         </Link>
       ))}
     </div>
   </div>
 );
 
-// ----- UPDATED ProductsPanel to accept loading and products -----
 const ProductsPanel = ({ products, loading }: { products: any[]; loading: boolean }) => {
   const { addToCart, toggleFavourite, isFavourite, trackInteraction } = useShop();
 
@@ -449,15 +490,31 @@ const ProductsPanel = ({ products, loading }: { products: any[]; loading: boolea
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((p) => (
-            <div key={p.id} onMouseEnter={() => trackInteraction(p)} className="bg-background border border-border rounded-xl p-5 group hover:border-secondary transition-colors">
+            <div
+              key={p.id}
+              onMouseEnter={() => trackInteraction(p)}
+              className="bg-background border border-border rounded-xl p-5 group hover:border-secondary transition-colors"
+            >
               <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-primary/5 to-secondary/10 flex items-center justify-center mb-4">
                 <span className="text-4xl">📄</span>
               </div>
               <h3 className="font-body font-semibold text-foreground mb-1">{p.title}</h3>
               <p className="text-secondary font-bold font-body mb-3">{p.price}</p>
               <div className="flex gap-2">
-                <button onClick={() => addToCart(p)} className="flex-1 bg-secondary text-secondary-foreground text-sm font-semibold py-2 rounded-full hover:bg-secondary/90 font-body">Add to cart</button>
-                <button onClick={() => toggleFavourite(p)} className={`w-9 h-9 rounded-full border flex items-center justify-center ${isFavourite(p.id) ? "bg-destructive/10 text-destructive border-destructive/30" : "border-border text-foreground hover:border-secondary"}`}>
+                <button
+                  onClick={() => addToCart(p)}
+                  className="flex-1 bg-secondary text-secondary-foreground text-sm font-semibold py-2 rounded-full hover:bg-secondary/90 font-body"
+                >
+                  Add to cart
+                </button>
+                <button
+                  onClick={() => toggleFavourite(p)}
+                  className={`w-9 h-9 rounded-full border flex items-center justify-center ${
+                    isFavourite(p.id)
+                      ? "bg-destructive/10 text-destructive border-destructive/30"
+                      : "border-border text-foreground hover:border-secondary"
+                  }`}
+                >
                   <Heart className={`h-4 w-4 ${isFavourite(p.id) ? "fill-current" : ""}`} />
                 </button>
               </div>
@@ -473,7 +530,11 @@ const CartPanel = ({ cart, cartSubtotal, updateQty, removeFromCart, clearCart, c
   <div>
     <div className="flex items-center justify-between mb-6">
       <h2 className="font-display text-2xl font-bold text-foreground">Your Cart</h2>
-      {cart.length > 0 && <button onClick={clearCart} className="text-sm text-muted-foreground hover:text-destructive font-body">Clear cart</button>}
+      {cart.length > 0 && (
+        <button onClick={clearCart} className="text-sm text-muted-foreground hover:text-destructive font-body">
+          Clear cart
+        </button>
+      )}
     </div>
     {cart.length === 0 ? (
       <EmptyState icon={ShoppingCart} title="Your cart is empty" description="Browse products to start adding items." />
@@ -482,17 +543,25 @@ const CartPanel = ({ cart, cartSubtotal, updateQty, removeFromCart, clearCart, c
         <div className="space-y-1">
           {cart.map((item: any) => (
             <div key={item.id} className="flex items-center gap-4 py-4 border-b border-border last:border-b-0">
-              <div className="w-14 h-14 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">📄</div>
+              <div className="w-14 h-14 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">
+                📄
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="font-body font-medium text-foreground truncate">{item.title}</p>
                 <p className="text-sm font-semibold text-foreground font-body mt-0.5">{item.price}</p>
               </div>
               <div className="flex items-center border border-border rounded-full">
-                <button onClick={() => updateQty(item.id, item.qty - 1)} className="px-2.5 py-1.5 text-foreground hover:text-secondary"><Minus className="h-3 w-3" /></button>
+                <button onClick={() => updateQty(item.id, item.qty - 1)} className="px-2.5 py-1.5 text-foreground hover:text-secondary">
+                  <Minus className="h-3 w-3" />
+                </button>
                 <span className="px-2 text-sm font-body text-foreground">{item.qty}</span>
-                <button onClick={() => updateQty(item.id, item.qty + 1)} className="px-2.5 py-1.5 text-foreground hover:text-secondary"><Plus className="h-3 w-3" /></button>
+                <button onClick={() => updateQty(item.id, item.qty + 1)} className="px-2.5 py-1.5 text-foreground hover:text-secondary">
+                  <Plus className="h-3 w-3" />
+                </button>
               </div>
-              <button onClick={() => removeFromCart(item.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+              <button onClick={() => removeFromCart(item.id)} className="text-muted-foreground hover:text-destructive">
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
           ))}
         </div>
@@ -501,7 +570,12 @@ const CartPanel = ({ cart, cartSubtotal, updateQty, removeFromCart, clearCart, c
             <p className="text-sm text-muted-foreground font-body">Subtotal</p>
             <p className="text-2xl font-bold text-foreground font-body">NGN{cartSubtotal.toFixed(2)}</p>
           </div>
-          <button onClick={checkout} className="bg-secondary text-secondary-foreground font-semibold px-8 py-3 rounded-full hover:bg-secondary/90 transition-colors font-body">Checkout</button>
+          <button
+            onClick={checkout}
+            className="bg-secondary text-secondary-foreground font-semibold px-8 py-3 rounded-full hover:bg-secondary/90 transition-colors font-body"
+          >
+            Checkout
+          </button>
         </div>
       </div>
     )}
@@ -534,14 +608,26 @@ const FavouritesPanel = ({ favourites, addToCart, toggleFavourite, recentlyViewe
       <div className="grid sm:grid-cols-2 gap-4">
         {favourites.map((item: any) => (
           <div key={item.id} className="flex items-center gap-4 p-4 bg-background border border-border rounded-xl">
-            <div className="w-14 h-14 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">📄</div>
+            <div className="w-14 h-14 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">
+              📄
+            </div>
             <div className="flex-1 min-w-0">
               <p className="font-body font-medium text-foreground truncate">{item.title}</p>
               <p className="text-sm text-foreground font-body">{item.price}</p>
             </div>
             <div className="flex flex-col gap-1">
-              <button onClick={() => addToCart(item)} className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full font-body">Add</button>
-              <button onClick={() => toggleFavourite(item)} className="text-xs text-muted-foreground hover:text-destructive font-body">Remove</button>
+              <button
+                onClick={() => addToCart(item)}
+                className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full font-body"
+              >
+                Add
+              </button>
+              <button
+                onClick={() => toggleFavourite(item)}
+                className="text-xs text-muted-foreground hover:text-destructive font-body"
+              >
+                Remove
+              </button>
             </div>
           </div>
         ))}
@@ -613,7 +699,9 @@ const OrdersPanel = ({ onViewDocs }: { onViewDocs: (orderId: string) => void }) 
     <div>
       <h2 className="font-display text-2xl font-bold text-foreground mb-6">Orders</h2>
       {loading ? (
-        <div className="bg-background border border-border rounded-xl p-8 text-center text-sm text-muted-foreground font-body">Loading…</div>
+        <div className="bg-background border border-border rounded-xl p-8 text-center text-sm text-muted-foreground font-body">
+          Loading…
+        </div>
       ) : rows.length === 0 ? (
         <EmptyState icon={Package} title="No orders yet" description="Your past orders will show up here." />
       ) : (
@@ -636,7 +724,9 @@ const OrdersPanel = ({ onViewDocs }: { onViewDocs: (orderId: string) => void }) 
                 return (
                   <tr key={o.id} className="border-t border-border">
                     <td className="px-4 py-3 text-foreground font-mono text-xs">{o.id.slice(0, 8)}…</td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {new Date(o.created_at).toLocaleDateString()}
+                    </td>
                     <td className="px-4 py-3 text-right text-foreground font-semibold">{fmt}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border ${statusBadgeClass(o.status)}`}>
@@ -661,7 +751,6 @@ const OrdersPanel = ({ onViewDocs }: { onViewDocs: (orderId: string) => void }) 
     </div>
   );
 };
-
 
 const PaymentsPanel = ({ payments }: any) => (
   <div>
@@ -688,7 +777,9 @@ const PaymentsPanel = ({ payments }: any) => (
                 <td className="px-4 py-3 text-foreground">{p.method}</td>
                 <td className="px-4 py-3 text-right text-foreground font-semibold">${p.amount.toFixed(2)}</td>
                 <td className="px-4 py-3 text-right">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary/15 text-secondary">{p.status}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary/15 text-secondary">
+                    {p.status}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -734,7 +825,6 @@ const DocumentsPanel = ({ documents, downloadDocument, refillDocument, orderFilt
       toast({ title: "File not available yet", description: "Your purchase is confirmed but the file link is missing.", variant: "destructive" });
       return;
     }
-    // Optimistic increment + RLS-protected update
     const nextCount = doc.download_count + 1;
     setLiveDocs((prev) => prev.map((d) => d.id === doc.id ? { ...d, download_count: nextCount } : d));
     const { error } = await supabase
@@ -754,70 +844,84 @@ const DocumentsPanel = ({ documents, downloadDocument, refillDocument, orderFilt
     <div>
       <div className="mb-6">
         <h2 className="font-display text-2xl font-bold text-foreground">My Documents</h2>
-        <p className="text-sm text-muted-foreground font-body">Files from your purchases. Each document includes a download quota.</p>
+        <p className="text-sm text-muted-foreground font-body">
+          Files from your purchases. Each document includes a download quota.
+        </p>
       </div>
 
-      {/* Live purchased documents from Paystack orders */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-display text-base font-bold text-foreground">Purchased downloads</h3>
           {orderFilter && (
-            <button
-              onClick={clearOrderFilter}
-              className="text-xs font-body text-secondary hover:underline"
-            >
+            <button onClick={clearOrderFilter} className="text-xs font-body text-secondary hover:underline">
               Showing order {orderFilter.slice(0, 8)}… · Clear filter
             </button>
           )}
         </div>
         {loadingLive ? (
-          <div className="bg-background border border-border rounded-xl p-8 text-center text-sm text-muted-foreground font-body">Loading…</div>
+          <div className="bg-background border border-border rounded-xl p-8 text-center text-sm text-muted-foreground font-body">
+            Loading…
+          </div>
         ) : (() => {
           const filtered = orderFilter ? liveDocs.filter((d) => d.order_id === orderFilter) : liveDocs;
           if (filtered.length === 0) {
-            return <EmptyState icon={FileText} title={orderFilter ? "No documents for this order" : "No purchased downloads yet"} description={orderFilter ? "This order has no document entitlements attached." : "Files from completed Paystack orders will appear here."} />;
+            return (
+              <EmptyState
+                icon={FileText}
+                title={orderFilter ? "No documents for this order" : "No purchased downloads yet"}
+                description={orderFilter ? "This order has no document entitlements attached." : "Files from completed Paystack orders will appear here."}
+              />
+            );
           }
           return (
-          <div className="grid sm:grid-cols-2 gap-4">
-            {filtered.map((d) => {
-              const remaining = d.max_downloads - d.download_count;
-              const exhausted = remaining <= 0;
-              const pct = (d.download_count / d.max_downloads) * 100;
-              return (
-                <div key={d.id} className="bg-background border border-border rounded-xl p-5">
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">📄</div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body font-semibold text-foreground truncate">{d.file_name}</p>
-                      <p className="text-[11px] text-muted-foreground font-body">Purchased {new Date(d.created_at).toLocaleDateString()}</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {filtered.map((d) => {
+                const remaining = d.max_downloads - d.download_count;
+                const exhausted = remaining <= 0;
+                const pct = (d.download_count / d.max_downloads) * 100;
+                return (
+                  <div key={d.id} className="bg-background border border-border rounded-xl p-5">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">
+                        📄
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-body font-semibold text-foreground truncate">{d.file_name}</p>
+                        <p className="text-[11px] text-muted-foreground font-body">
+                          Purchased {new Date(d.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between text-xs font-body mb-1">
+                        <span className="text-muted-foreground">Downloads used</span>
+                        <span className={`font-semibold ${exhausted ? "text-destructive" : "text-foreground"}`}>
+                          {d.download_count} / {d.max_downloads}
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${exhausted ? "bg-destructive" : "bg-secondary"} transition-all`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleLiveDownload(d)}
+                      disabled={exhausted}
+                      className="w-full bg-secondary text-secondary-foreground text-sm font-semibold py-2.5 rounded-full hover:bg-secondary/90 font-body flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      {exhausted ? "Quota reached" : `Download (${remaining} left)`}
+                    </button>
                   </div>
-                  <div className="mb-3">
-                    <div className="flex items-center justify-between text-xs font-body mb-1">
-                      <span className="text-muted-foreground">Downloads used</span>
-                      <span className={`font-semibold ${exhausted ? "text-destructive" : "text-foreground"}`}>{d.download_count} / {d.max_downloads}</span>
-                    </div>
-                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div className={`h-full ${exhausted ? "bg-destructive" : "bg-secondary"} transition-all`} style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleLiveDownload(d)}
-                    disabled={exhausted}
-                    className="w-full bg-secondary text-secondary-foreground text-sm font-semibold py-2.5 rounded-full hover:bg-secondary/90 font-body flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Download className="h-3.5 w-3.5" /> {exhausted ? "Quota reached" : `Download (${remaining} left)`}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
           );
         })()}
       </section>
 
-
-      {/* Legacy / sample documents (local state) */}
       {documents.length > 0 && (
         <section>
           <h3 className="font-display text-base font-bold text-foreground mb-3">Sample documents</h3>
@@ -829,27 +933,42 @@ const DocumentsPanel = ({ documents, downloadDocument, refillDocument, orderFilt
               return (
                 <div key={d.id} className="bg-background border border-border rounded-xl p-5">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">📄</div>
+                    <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">
+                      📄
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-body font-semibold text-foreground">{d.title}</p>
-                      <p className="text-[11px] text-muted-foreground font-body">Purchased {new Date(d.purchasedAt).toLocaleDateString()}</p>
+                      <p className="text-[11px] text-muted-foreground font-body">
+                        Purchased {new Date(d.purchasedAt).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                   <div className="mb-3">
                     <div className="flex items-center justify-between text-xs font-body mb-1">
                       <span className="text-muted-foreground">Downloads used</span>
-                      <span className={`font-semibold ${exhausted ? "text-destructive" : "text-foreground"}`}>{d.downloadsUsed} / {d.downloadLimit}</span>
+                      <span className={`font-semibold ${exhausted ? "text-destructive" : "text-foreground"}`}>
+                        {d.downloadsUsed} / {d.downloadLimit}
+                      </span>
                     </div>
                     <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div className={`h-full ${exhausted ? "bg-destructive" : "bg-secondary"} transition-all`} style={{ width: `${pct}%` }} />
+                      <div
+                        className={`h-full ${exhausted ? "bg-destructive" : "bg-secondary"} transition-all`}
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                   </div>
                   {exhausted ? (
-                    <button onClick={() => refillDocument(d.id)} className="w-full bg-foreground text-background text-sm font-semibold py-2.5 rounded-full font-body flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => refillDocument(d.id)}
+                      className="w-full bg-foreground text-background text-sm font-semibold py-2.5 rounded-full font-body flex items-center justify-center gap-2"
+                    >
                       <RefreshCw className="h-3.5 w-3.5" /> Top up access · {d.refillPrice}
                     </button>
                   ) : (
-                    <button onClick={() => downloadDocument(d.id)} className="w-full bg-secondary text-secondary-foreground text-sm font-semibold py-2.5 rounded-full hover:bg-secondary/90 font-body flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => downloadDocument(d.id)}
+                      className="w-full bg-secondary text-secondary-foreground text-sm font-semibold py-2.5 rounded-full hover:bg-secondary/90 font-body flex items-center justify-center gap-2"
+                    >
                       <Download className="h-3.5 w-3.5" /> Download ({remaining} left)
                     </button>
                   )}
@@ -873,7 +992,12 @@ const SettingsPanel = ({ onEditPrefs, preferences }: any) => (
           <p className="font-body font-semibold text-foreground">Your preferences</p>
           <p className="text-xs text-muted-foreground font-body">Used to personalize recommendations.</p>
         </div>
-        <button onClick={onEditPrefs} className="text-xs bg-secondary text-secondary-foreground px-4 py-2 rounded-full font-semibold font-body">Edit</button>
+        <button
+          onClick={onEditPrefs}
+          className="text-xs bg-secondary text-secondary-foreground px-4 py-2 rounded-full font-semibold font-body"
+        >
+          Edit
+        </button>
       </div>
       <div className="grid sm:grid-cols-2 gap-3 text-sm font-body">
         <PrefRow label="Destination" value={preferences.destination} />
@@ -895,13 +1019,17 @@ const SettingsPanel = ({ onEditPrefs, preferences }: any) => (
 const PrefRow = ({ label, value }: { label: string; value?: string }) => (
   <div>
     <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-body">{label}</p>
-    <p className="text-foreground font-body mt-0.5">{value || <span className="text-muted-foreground italic">Not set</span>}</p>
+    <p className="text-foreground font-body mt-0.5">
+      {value || <span className="text-muted-foreground italic">Not set</span>}
+    </p>
   </div>
 );
 
-// ============ Shared bits ============
 const StatCard = ({ label, value, onClick }: { label: string; value: number; onClick?: () => void }) => (
-  <button onClick={onClick} className="bg-background border border-border rounded-xl p-5 text-left hover:border-secondary transition-colors">
+  <button
+    onClick={onClick}
+    className="bg-background border border-border rounded-xl p-5 text-left hover:border-secondary transition-colors"
+  >
     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">{label}</p>
     <p className="text-3xl font-bold text-foreground font-body mt-1">{value}</p>
   </button>
@@ -928,7 +1056,9 @@ const SettingRow = ({ label, description }: { label: string; description: string
         className={`relative w-11 h-6 rounded-full transition-colors ${on ? "bg-secondary" : "bg-muted"}`}
         aria-label={label}
       >
-        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-background rounded-full shadow transition-transform ${on ? "translate-x-5" : ""}`} />
+        <span
+          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-background rounded-full shadow transition-transform ${on ? "translate-x-5" : ""}`}
+        />
       </button>
     </div>
   );
