@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Mail, Lock, User as UserIcon, Sparkles } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 
@@ -52,17 +52,12 @@ const AuthModal = () => {
             <img
               src="/logo.png"
               alt="Online Dynamics & BSB"
-              className="h-14 w-auto object-contain"
+              className="h-16 w-auto object-contain"
               onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
               }}
             />
           </div>
-
-            {/* Fallback icon (if logo missing) */}
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
-              <Sparkles className="h-6 w-6 text-secondary" />
-            </div>
 
             <h2 className="font-display text-2xl font-bold text-foreground mb-1">
               {mode === "login" ? "Welcome back" : "Create your account"}
@@ -90,13 +85,20 @@ const AuthModal = () => {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="email"
-                  placeholder="Email address"
+                  placeholder={mode === "signup" ? "johndoe@gmail.com" : "youremail@example.com"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 bg-muted border border-border rounded-lg text-foreground font-body text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                 />
               </div>
+
+              {mode === "signup" && (
+                <p className="text-xs text-muted-foreground font-body mt-1">
+                  Use a valid email — you'll receive order confirmations here.
+                </p>
+              )}
+
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input

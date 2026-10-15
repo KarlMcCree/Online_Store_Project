@@ -39,9 +39,9 @@ const Header = () => {
   return (
     <>
       <header className="bg-background sticky top-0 z-50 border-b border-border">
-        <div className="container flex items-center justify-between py-4">
+        <div className="container grid grid-cols-3 items-center py-3">
           {/* Left nav */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8 justify-self-start">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
@@ -55,7 +55,7 @@ const Header = () => {
 
           {/* Mobile menu button */}
           <button
-            className="lg:hidden text-foreground"
+            className="lg:hidden text-foreground justify-self-start"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -63,23 +63,22 @@ const Header = () => {
           </button>
 
           {/* Logo */}
-          <Link to="/" className="flex flex-col items-center gap-1">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 justify-self-center">
             <img
               src="/logo.png"
               alt="Online Dynamics & BSB"
-              className="h-10 w-auto object-contain"
+              className="h-10 sm:h-12 md:h-14 w-auto object-contain flex-shrink-0"
               onError={(e) => {
-              // Fallback if logo not found
               (e.target as HTMLImageElement).style.display = "none";
               }}
             />
-            <span className="font-display text-lg md:text-xl font-bold tracking-tight text-foreground">
+            <span className="font-display text-lg md:text-xl font-bold tracking-tight text-foreground whitespace-nowrap">
               Online Dynamics & BSB
             </span>
           </Link>
 
           {/* Right icons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-self-end">
             <button
               onClick={() => setSearchOpen(true)}
               className="text-foreground hover:text-secondary transition-colors"

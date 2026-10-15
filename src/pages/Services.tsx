@@ -3,7 +3,8 @@ import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import SEO from "@/components/SEO";
 import { Star, ShoppingCart, Heart, Eye, Filter, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import QuickViewModal from "@/components/QuickViewModal";
 
 const categories = [
@@ -149,12 +150,34 @@ const allProducts = [
 
 const sortOptions = ["Newest", "Price: Low to High", "Price: High to Low", "Top Rated"];
 
+// Map URL slug → display category name
+const slugToCategory: Record<string, string> = {
+  "study-abroad": "Study Abroad",
+  "migration": "Migration",
+  "digital-guides": "Digital Guides",
+  "consultation": "Consultation",
+  "travel-packages": "Travel Packages",
+  "second-passport": "Second Passport",
+};
+
 const Services = () => {
+  const [searchParams] = useSearchParams();
+  const urlCategory = searchParams.get("category");
+
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("Newest");
   const [showSort, setShowSort] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<typeof allProducts[0] | null>(null);
   const [wishlist, setWishlist] = useState<number[]>([]);
+
+  // Sync URL param → active category (runs when URL changes)
+  useEffect(() => {
+    if (urlCategory && slugToCategory[urlCategory]) {
+      setActiveCategory(slugToCategory[urlCategory]);
+    } else {
+      setActiveCategory("All");
+    }
+  }, [urlCategory]);
 
   const filtered = activeCategory === "All"
     ? allProducts
@@ -174,22 +197,23 @@ const Services = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Products & Services – The Digital Desk"
+        title={`${activeCategory === "All" ? "Products & Services" : activeCategory} – The Digital Desk`}
         description="Browse digital guides, consultations, and migration services to power your study-abroad journey."
         url="/services"
       />
       <AnnouncementBar />
       <Header />
 
-
       {/* Hero Banner */}
       <section className="bg-primary py-16 md:py-24">
         <div className="container text-center">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
-            Services & Products
+            {activeCategory === "All" ? "Services & Products" : activeCategory}
           </h1>
           <p className="text-primary-foreground/70 font-body text-lg max-w-2xl mx-auto">
-            Explore our full range of digital guides, expert consultations, and premium services to power your global journey.
+            {activeCategory === "All"
+              ? "Explore our full range of digital guides, expert consultations, and premium services to power your global journey."
+              : `Showing all ${activeCategory} products and services.`}
           </p>
         </div>
       </section>
@@ -247,75 +271,81 @@ const Services = () => {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-            {sorted.map((product) => (
-              <div key={product.id} className="group cursor-pointer">
-                <div className="relative bg-muted rounded-lg overflow-hidden aspect-[3/4] mb-4">
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/10">
-                    <div className="text-center p-6">
-                      <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
-                        <span className="text-2xl">{product.type === "digital" ? "📄" : "🎯"}</span>
+          {sorted.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground font-body">No products found in this category.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+              {sorted.map((product) => (
+                <div key={product.id} className="group cursor-pointer">
+                  <div className="relative bg-muted rounded-lg overflow-hidden aspect-[3/4] mb-4">
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/10">
+                      <div className="text-center p-6">
+                        <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
+                          <span className="text-2xl">{product.type === "digital" ? "📄" : "🎯"}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
+                          {product.type === "digital" ? "Digital Product" : "Service"}
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
-                        {product.type === "digital" ? "Digital Product" : "Service"}
-                      </p>
+                    </div>
+
+                    {product.badge && (
+                      <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-sm ${product.badgeColor}`}>
+                        {product.badge}
+                      </span>
+                    )}
+
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
+                        className={`w-9 h-9 rounded-full border border-border bg-background flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all ${wishlist.includes(product.id) ? "bg-destructive/10 text-destructive border-destructive/30" : "text-foreground"}`}
+                        aria-label="Add to wishlist"
+                      >
+                        <Heart className={`h-4 w-4 ${wishlist.includes(product.id) ? "fill-current" : ""}`} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setQuickViewProduct(product); }}
+                        className="w-9 h-9 rounded-full border border-border bg-background text-foreground flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all"
+                        aria-label="Quick view"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 p-3">
+                      <button className="w-full bg-background text-foreground text-xs font-semibold py-2.5 rounded-full shadow-lg hover:bg-secondary hover:text-secondary-foreground transition-all flex items-center justify-center gap-2 font-body">
+                        <ShoppingCart className="h-3.5 w-3.5" />
+                        Quick Add
+                      </button>
                     </div>
                   </div>
 
-                  {product.badge && (
-                    <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-sm ${product.badgeColor}`}>
-                      {product.badge}
-                    </span>
-                  )}
+                  <h3 className="font-body text-sm font-medium text-foreground group-hover:text-secondary transition-colors mb-1.5 line-clamp-2">
+                    {product.title}
+                  </h3>
 
-                  <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
-                      className={`w-9 h-9 rounded-full border border-border bg-background flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all ${wishlist.includes(product.id) ? "bg-destructive/10 text-destructive border-destructive/30" : "text-foreground"}`}
-                      aria-label="Add to wishlist"
-                    >
-                      <Heart className={`h-4 w-4 ${wishlist.includes(product.id) ? "fill-current" : ""}`} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setQuickViewProduct(product); }}
-                      className="w-9 h-9 rounded-full border border-border bg-background text-foreground flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all"
-                      aria-label="Quick view"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
+                  <div className="flex items-center gap-1 mb-1.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-3 w-3 ${i < Math.floor(product.rating) ? "fill-secondary text-secondary" : "text-border"}`}
+                      />
+                    ))}
+                    <span className="text-xs text-muted-foreground ml-1">{product.rating}</span>
                   </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 p-3">
-                    <button className="w-full bg-background text-foreground text-xs font-semibold py-2.5 rounded-full shadow-lg hover:bg-secondary hover:text-secondary-foreground transition-all flex items-center justify-center gap-2 font-body">
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      Quick Add
-                    </button>
+                  <div className="flex items-center gap-2">
+                    <span className="font-body font-semibold text-foreground">{product.price}</span>
+                    {product.originalPrice && (
+                      <span className="text-sm text-muted-foreground line-through">{product.originalPrice}</span>
+                    )}
                   </div>
                 </div>
-
-                <h3 className="font-body text-sm font-medium text-foreground group-hover:text-secondary transition-colors mb-1.5 line-clamp-2">
-                  {product.title}
-                </h3>
-
-                <div className="flex items-center gap-1 mb-1.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-3 w-3 ${i < Math.floor(product.rating) ? "fill-secondary text-secondary" : "text-border"}`}
-                    />
-                  ))}
-                  <span className="text-xs text-muted-foreground ml-1">{product.rating}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="font-body font-semibold text-foreground">{product.price}</span>
-                  {product.originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">{product.originalPrice}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

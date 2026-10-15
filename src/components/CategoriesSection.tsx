@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import catStudy from "@/assets/cat-study-abroad.jpg";
 import catMigration from "@/assets/cat-migration.jpg";
 import catDigital from "@/assets/cat-digital.jpg";
@@ -6,12 +7,12 @@ import catTravel from "@/assets/cat-travel.jpg";
 import catPassport from "@/assets/cat-passport.jpg";
 
 const categories = [
-  { name: "Study Abroad", image: catStudy },
-  { name: "Migration", image: catMigration },
-  { name: "Digital Guides", image: catDigital },
-  { name: "Consultation", image: catConsultation },
-  { name: "Travel Packages", image: catTravel },
-  { name: "Second Passport", image: catPassport },
+  { name: "Study Abroad", image: catStudy, slug: "study-abroad" },
+  { name: "Migration", image: catMigration, slug: "migration" },
+  { name: "Digital Guides", image: catDigital, slug: "digital-guides" },
+  { name: "Consultation", image: catConsultation, slug: "consultation" },
+  { name: "Travel Packages", image: catTravel, slug: "travel-packages" },
+  { name: "Second Passport", image: catPassport, slug: "second-passport" },
 ];
 
 const CategoriesSection = () => {
@@ -29,10 +30,10 @@ const CategoriesSection = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
           {categories.map((cat) => (
-            <a
+            <Link
               key={cat.name}
-              href="#"
-              className="group flex flex-col items-center text-center"
+              to={`/services?category=${cat.slug}`}
+              className="group flex flex-col items-center text-center cursor-pointer"
             >
               <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-muted mb-4 group-hover:shadow-lg transition-shadow duration-300 border-2 border-transparent group-hover:border-secondary">
                 <img
@@ -47,7 +48,7 @@ const CategoriesSection = () => {
               <span className="text-sm font-medium text-foreground group-hover:text-secondary transition-colors font-body">
                 {cat.name}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
