@@ -39,7 +39,8 @@ const Header = () => {
   return (
     <>
       <header className="bg-background sticky top-0 z-50 border-b border-border">
-        <div className="container grid grid-cols-3 items-center py-3">
+        <div className="container grid grid-cols-[auto_1fr_auto] items-center gap-4 py-3">
+
           {/* Left nav */}
           <nav className="hidden lg:flex items-center gap-8 justify-self-start">
             {navLinks.map((link) => (
@@ -62,19 +63,29 @@ const Header = () => {
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 justify-self-center">
+          {/* Logo + Text + Logo (all together in center) */}
+          <Link to="/" className="flex items-center justify-center gap-2 sm:gap-3 min-w-0">
             <img
               src="/logo.png"
-              alt="Online Dynamics & BSB"
+              alt="Online Dynamics"
               className="h-10 sm:h-12 md:h-14 w-auto object-contain flex-shrink-0"
               onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
+                (e.target as HTMLImageElement).style.display = "none";
               }}
             />
-            <span className="font-display text-lg md:text-xl font-bold tracking-tight text-foreground whitespace-nowrap">
-              Online Dynamics & BSB
+
+            <span className="font-display text-xs sm:text-sm md:text-base lg:text-lg font-bold tracking-tight text-foreground text-center leading-tight">
+              Travel Wise <span className="text-[0.7em] font-normal">with</span> Online Dynamics & BSB International
             </span>
+
+            <img
+              src="/logo2.png"
+              alt="BSB International"
+              className="h-10 sm:h-12 md:h-14 w-auto object-contain flex-shrink-0"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
           </Link>
 
           {/* Right icons */}

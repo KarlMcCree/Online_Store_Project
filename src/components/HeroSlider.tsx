@@ -51,6 +51,7 @@ const HeroSlider = () => {
 
   return (
     <section className="relative w-full h-[75vh] min-h-[500px] overflow-hidden">
+      {/* Background images */}
       {slides.map((s, i) => (
         <img
           key={i}
@@ -64,8 +65,23 @@ const HeroSlider = () => {
           {...(i === 0 ? {} : { loading: "lazy" as const })}
         />
       ))}
+
       {/* Overlay */}
       <div className="absolute inset-0 bg-foreground/40" />
+
+      {/* Logo Badge 
+      <div className="absolute top-6 right-6 z-10 flex flex-row items-center gap-4">
+        <img
+          src="/logo.png"
+          alt="Travel Wise with Online Dynamics & BSB International"
+          className="h-20 sm:h-24 md:h-32 w-auto object-contain drop-shadow-lg"
+          />
+        <img
+          src="/logo2.png"
+          alt="BSB International"
+          className="h-20 sm:h-24 md:h-32 w-auto object-contain drop-shadow-lg"
+          />  
+      </div>*/}
 
       {/* Content */}
       <div className="absolute inset-0 flex items-center justify-center text-center">

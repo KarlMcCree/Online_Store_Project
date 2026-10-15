@@ -90,7 +90,7 @@ const Footer = () => {
       <div className="border-t border-primary-foreground/10 py-6">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-col items-center md:items-start">
-            <span className="font-display text-lg font-bold">Online Dynamics & BSB</span>
+            <span className="font-display text-lg font-bold">Travel Wise with Online Dynamics & BSB International</span>
             <span className="text-primary-foreground/50 text-xs font-body">
               © {new Date().getFullYear()} All rights reserved.
             </span>

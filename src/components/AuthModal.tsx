@@ -51,7 +51,7 @@ const AuthModal = () => {
           <div className="flex justify-center mb-4">
             <img
               src="/logo.png"
-              alt="Online Dynamics & BSB"
+              alt="Travel Wise with Online Dynamics & BSB International"
               className="h-16 w-auto object-contain"
               onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
