@@ -152,15 +152,18 @@ const Dashboard = () => {
       <header className="bg-background border-b border-border sticky top-0 z-30">
         <div className="flex items-center justify-between gap-4 px-4 md:px-8 py-4">
           <div className="flex items-center gap-3 min-w-0">
-            <Link to="/" className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex-shrink-0 flex flex-col items-center justify-center group gap-1">
               <img
                 src="/logo.png"
-                alt="Online Dynamics & BSB"
-                className="h-9 w-auto object-contain"
+                alt="Travel Wise with Online Dynamics & BSB"
+                className="h-9 w-auto object-contain group-hover:opacity-80 transition-opacity"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                (e.target as HTMLImageElement).style.display = "none";
                 }}
               />
+              <span className="text-[10px] font-body text-muted-foreground group-hover:text-secondary transition-colors">
+                Back to Home
+              </span>
             </Link>
             <div className="hidden sm:block min-w-0">
               <h1 className="font-display text-lg md:text-xl font-bold text-foreground truncate">
@@ -544,7 +547,7 @@ const CartPanel = ({ cart, cartSubtotal, updateQty, removeFromCart, clearCart, c
           {cart.map((item: any) => (
             <div key={item.id} className="flex items-center gap-4 py-4 border-b border-border last:border-b-0">
               <div className="w-14 h-14 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">
-                📄
+                
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-body font-medium text-foreground truncate">{item.title}</p>
@@ -609,7 +612,7 @@ const FavouritesPanel = ({ favourites, addToCart, toggleFavourite, recentlyViewe
         {favourites.map((item: any) => (
           <div key={item.id} className="flex items-center gap-4 p-4 bg-background border border-border rounded-xl">
             <div className="w-14 h-14 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 text-xl">
-              📄
+              
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-body font-medium text-foreground truncate">{item.title}</p>

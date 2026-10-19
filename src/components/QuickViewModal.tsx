@@ -13,6 +13,7 @@ interface QuickViewModalProps {
     rating: number;
     description: string;
     badge?: string;
+    image_url?: string | null; // Added image_url to the type
   };
 }
 
@@ -39,24 +40,34 @@ const QuickViewModal = ({ open, onClose, product }: QuickViewModalProps) => {
           <div className="relative p-6">
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-foreground hover:text-secondary transition-colors"
+              className="absolute top-4 right-4 text-foreground hover:text-secondary transition-colors z-10"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {/* Image */}
-              <div className="bg-muted rounded-lg aspect-square flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
-                    <span className="text-4xl">📄</span>
+              {/* Image Section */}
+              <div className="bg-muted rounded-lg aspect-square flex items-center justify-center overflow-hidden">
+                {product.image_url ? (
+                  // Render the actual image if it exists
+                  <img 
+                    src={product.image_url} 
+                    alt={product.title} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  // Fallback to the icon if no image
+                  <div className="text-center">
+                    <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <span className="text-4xl">📄</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">Digital Product</p>
                   </div>
-                  <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">Digital Product</p>
-                </div>
+                )}
               </div>
 
-              {/* Details */}
+              {/* Details Section */}
               <div>
                 {product.badge && (
                   <span className="inline-block text-[10px] font-bold bg-secondary text-secondary-foreground px-2.5 py-1 rounded-sm mb-3">
@@ -82,7 +93,10 @@ const QuickViewModal = ({ open, onClose, product }: QuickViewModalProps) => {
                   )}
                 </div>
 
-                <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6">{product.description}</p>
+                {/* Added whitespace-pre-wrap so paragraphs and line breaks show up correctly */}
+                <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6 whitespace-pre-wrap">
+                  {product.description}
+                </p>
 
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex items-center border border-border rounded-full">

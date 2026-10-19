@@ -20,6 +20,7 @@ type Product = {
   saleRibbon?: string;
   slug?: string;
   category?: string;
+  image_url?: string; // <-- ADDED
 };
 
 const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView: (p: Product) => void }) => {
@@ -36,50 +37,52 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView: 
   return (
     <div className="group cursor-pointer">
       <div className="relative bg-muted rounded-lg overflow-hidden aspect-[3/4] mb-4">
-        {/* Product visual */}
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/10">
-          <div className="text-center p-6">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
-              <span className="text-2xl">{product.type === "service" ? "🧑‍💼" : "📄"}</span>
-            </div>
-            <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
-              {product.type === "service" ? "Service" : "Digital Product"}
-            </p>
-            {product.category && (
-              <p className="text-[10px] text-secondary font-body uppercase tracking-wider mt-1">
-                {product.category}
+        
+        {/*  Render the image if it exists, otherwise show emoji */}
+        {product.image_url ? (
+          <img 
+            src={product.image_url} 
+            alt={product.title} 
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/10">
+            <div className="text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-secondary/20 flex items-center justify-center">
+                <span className="text-2xl">{product.type === "service" ? "🧑‍💼" : "📄"}</span>
+              </div>
+              <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
+                {product.type === "service" ? "Service" : "Digital Product"}
               </p>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Badge */}
         {product.badge && (
-          <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-sm ${product.badgeColor}`}>
+          <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-sm ${product.badgeColor} z-10`}>
             {product.badge}
           </span>
         )}
 
         {/* Side action icons */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 z-10">
           <button
             onClick={(e) => { e.stopPropagation(); toggleFavourite(shopItem); }}
             className={`w-9 h-9 rounded-full border border-border bg-background flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all ${wishlisted ? "bg-destructive/10 text-destructive border-destructive/30" : "text-foreground"}`}
-            aria-label="Add to wishlist"
           >
             <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
             className="w-9 h-9 rounded-full border border-border bg-background text-foreground flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all"
-            aria-label="Quick view"
           >
             <Eye className="h-4 w-4" />
           </button>
         </div>
 
         {/* Quick Add button */}
-        <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 p-3">
+        <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 p-3 z-10">
           <button
             onClick={(e) => { e.stopPropagation(); addToCart(shopItem); }}
             className="w-full bg-background text-foreground text-xs font-semibold py-2.5 rounded-full shadow-lg hover:bg-secondary hover:text-secondary-foreground transition-all flex items-center justify-center gap-2 font-body"
@@ -162,6 +165,7 @@ const FeaturedProducts = () => {
           short_description: p.short_description || p.description?.slice(0, 100) || "",
           slug: p.slug,
           category: p.attributes?.category || undefined,
+          image_url: p.featured_image || p.image_url, 
         }));
 
         setDbProducts(mappedProducts);

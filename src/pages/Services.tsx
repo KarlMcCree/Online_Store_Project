@@ -16,7 +16,6 @@ const categories = [
   "Digital Guides",
   "Consultation",
   "Travel Packages",
-  "Second Passport",
 ];
 
 const sortOptions = ["Newest", "Price: Low to High", "Price: High to Low", "Top Rated"];
@@ -27,7 +26,6 @@ const slugToCategory: Record<string, string> = {
   "digital-guides": "Digital Guides",
   "consultation": "Consultation",
   "travel-packages": "Travel Packages",
-  "second-passport": "Second Passport",
 };
 
 const Services = () => {
@@ -65,7 +63,7 @@ const Services = () => {
           originalPrice: p.sale_price ? `NGN ${p.price}` : null,
           rating: 4.8, // Default rating since it's not in DB yet
           type: p.type === "service" ? "service" : "digital",
-          category: p.category || "General",
+          category: p.category || p.attributes?.category || "General",
           description: p.description || "",
           image_url: p.image_url || p.featured_image,
           badge: p.is_featured ? "FEATURED" : null,
@@ -89,7 +87,9 @@ const Services = () => {
 
   const filtered = activeCategory === "All"
     ? products
-    : products.filter((p) => p.category === activeCategory);
+    : products.filter((p) => 
+        p.category?.toLowerCase().trim() === activeCategory.toLowerCase().trim()
+      );
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "Top Rated") return b.rating - a.rating;
@@ -272,6 +272,7 @@ const Services = () => {
           rating: quickViewProduct.rating,
           description: quickViewProduct.description,
           badge: quickViewProduct.badge,
+          image_url: quickViewProduct.image_url,
         } : undefined}
       />
     </div>
