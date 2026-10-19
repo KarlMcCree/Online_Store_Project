@@ -2,7 +2,7 @@
 
 ##  Overview
 
-**Online Store** is a full-featured e-commerce platform for selling digital products (guides, templates, courses) and services (migration consulting, education advisory, travel assistance). Built with modern web technologies, it provides a seamless experience for customers and administrators.
+**Online Store** is a full-featured e-commerce platform for selling digital products (guides, templates) and services (migration consulting, education advisory, travel assistance). Built with modern web technologies, it provides a seamless experience for customers and administrators.
 
 **Live Demo:** 
 
