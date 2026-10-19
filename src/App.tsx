@@ -21,6 +21,7 @@ import Privacy from "./pages/Privacy.tsx";
 import Refund from "./pages/Refund.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProductDetail from "@/pages/ProductDetail";
+import UpdatePassword from "@/pages/UpdatePassword";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
                 <Route path="/refund" element={<Refund />} />
                 <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>} />
                 <Route path="/product/:slug" element={<ProductDetail />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

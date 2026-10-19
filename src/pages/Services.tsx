@@ -150,7 +150,6 @@ const allProducts = [
 
 const sortOptions = ["Newest", "Price: Low to High", "Price: High to Low", "Top Rated"];
 
-// Map URL slug → display category name
 const slugToCategory: Record<string, string> = {
   "study-abroad": "Study Abroad",
   "migration": "Migration",
@@ -170,7 +169,6 @@ const Services = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<typeof allProducts[0] | null>(null);
   const [wishlist, setWishlist] = useState<number[]>([]);
 
-  // Sync URL param → active category (runs when URL changes)
   useEffect(() => {
     if (urlCategory && slugToCategory[urlCategory]) {
       setActiveCategory(slugToCategory[urlCategory]);

@@ -17,12 +17,13 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  // Auth gate modal
   authModalOpen: boolean;
   authModalMode: "login" | "signup";
   openAuthModal: (mode?: "login" | "signup", reason?: string) => void;
   closeAuthModal: () => void;
   authReason: string | null;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,13 +51,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authReason, setAuthReason] = useState<string | null>(null);
 
   useEffect(() => {
-    // Subscribe FIRST so we don't miss the initial event.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session: Session | null) => {
       setUser(mapUser(session?.user));
       setLoading(false);
     });
 
-    // Then hydrate from any existing session.
     supabase.auth.getSession().then(({ data }) => {
       setUser(mapUser(data.session?.user));
       setLoading(false);
@@ -101,11 +100,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/update-password`,
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      throw error;
+    }
+  };
+
+  
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      throw error;
+    }
+    toast({ title: "Success", description: "Your password has been updated." });
+  };
+
   const openAuthModal = (mode: "login" | "signup" = "signup", reason?: string) => {
     setAuthModalMode(mode);
     setAuthReason(reason ?? null);
     setAuthModalOpen(true);
   };
+
   const closeAuthModal = () => {
     setAuthModalOpen(false);
     setAuthReason(null);
@@ -125,6 +146,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         openAuthModal,
         closeAuthModal,
         authReason,
+        resetPassword,  
+        updatePassword, 
       }}
     >
       {children}
