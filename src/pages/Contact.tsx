@@ -7,10 +7,10 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const contactInfo = [
-  { icon: Mail, label: "Email", value: "hello@onlinedynamics.com", href: "mailto:hello@onlinedynamics.com" },
-  { icon: Phone, label: "Phone", value: "+234 800 123 4567", href: "tel:+2348001234567" },
-  { icon: MapPin, label: "Address", value: "Lagos, Nigeria", href: "#" },
-  { icon: Clock, label: "Hours", value: "Mon–Fri, 9AM–6PM WAT", href: "#" },
+  { icon: Mail, label: "Email", value: "onlinedynamixtravel@gmail.com", href: "mailto:onlinedynamixtravel@gmail.com" },
+  { icon: Phone, label: "Phone", value: "+234 810 273 8145\n+234 803 242 9497", href: "tel:+2348102738145" },
+  { icon: MapPin, label: "Address", value: "7,Adepate Abebi Crescent, Off Idi–Ishin Police Station Jericho Road Ibadan", href: "#" },
+  { icon: Clock, label: "Hours", value: "Mon–Fri, 8AM–5PM WAT", href: "#" },
 ];
 
 const Contact = () => {
@@ -32,8 +32,8 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Contact Us – The Digital Desk"
-        description="Get in touch with The Digital Desk for study abroad, migration support, and digital product inquiries."
+        title="Contact Us – Online Dynamics & BSB International"
+        description="Get in touch with Online Dynamics & BSB International for study abroad, migration support, and digital product inquiries."
         url="/contact"
       />
       <AnnouncementBar />
@@ -75,7 +75,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground font-body">{item.label}</p>
-                      <p className="text-sm text-muted-foreground font-body">{item.value}</p>
+                      <p className="text-sm text-muted-foreground font-body whitespace-pre-line">{item.value}</p>
                     </div>
                   </a>
                 ))}

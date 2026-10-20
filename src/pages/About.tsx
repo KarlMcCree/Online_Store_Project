@@ -45,18 +45,18 @@ const values = [
 ];
 
 const team = [
-  { name: "Adebayo Johnson", role: "Founder & CEO", initials: "AJ" },
-  { name: "Sarah Mitchell", role: "Head of Migration Services", initials: "SM" },
-  { name: "David Okonkwo", role: "Study Abroad Director", initials: "DO" },
-  { name: "Amina Hassan", role: "Client Relations Manager", initials: "AH" },
+  { name: "", role: "Founder & CEO", initials: "AJ" },
+  { name: "", role: "Head of Migration Services", initials: "SM" },
+  { name: "", role: "Study Abroad Director", initials: "DO" },
+  { name: "", role: "Client Relations Manager", initials: "AH" },
 ];
 
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="About Us – The Digital Desk"
-        description="Learn about The Digital Desk — our mission to simplify study abroad, migration, and global mobility for everyone."
+        title="About Us – Online Dynamics & BSB International"
+        description="Learn about Online Dynamics & BSB International — our mission to simplify study abroad, migration, and global mobility for everyone."
         url="/about"
       />
       <AnnouncementBar />

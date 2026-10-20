@@ -6,6 +6,7 @@ import AdminOverview from "./AdminOverview";
 import AdminOrders from "./AdminOrders";
 import AdminProducts from "./AdminProducts";
 import AdminDocuments from "./AdminDocuments";
+import AdminBlog from "./AdminBlog";
 
 export default function AdminLayout() {
   return (
@@ -29,11 +30,14 @@ export default function AdminLayout() {
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="blog">Blog</TabsTrigger>
           </TabsList>
+          
           <TabsContent value="dashboard"><AdminOverview /></TabsContent>
           <TabsContent value="orders"><AdminOrders /></TabsContent>
           <TabsContent value="products"><AdminProducts /></TabsContent>
           <TabsContent value="documents"><AdminDocuments /></TabsContent>
+          <TabsContent value="blog"><AdminBlog /></TabsContent>
         </Tabs>
       </main>
     </div>

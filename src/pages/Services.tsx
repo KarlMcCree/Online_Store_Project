@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import SEO from "@/components/SEO";
-import { Star, ShoppingCart, Heart, Eye, Filter, ChevronDown, Loader2 } from "lucide-react";
+import { Star, Heart, Eye, Filter, ChevronDown, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import QuickViewModal from "@/components/QuickViewModal";
@@ -38,36 +38,34 @@ const Services = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<any | null>(null);
   const [wishlist, setWishlist] = useState<string[]>([]);
   
-  // State for Supabase products
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch products from Supabase
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .eq("is_active", true); // Only show active products
+        .eq("is_active", true); 
 
       if (error) {
         toast({ title: "Error loading products", description: error.message, variant: "destructive" });
         console.error(error);
       } else {
-        // Map database columns to match what the UI expects
-        const formatted = (data || []).map((p) => ({
-          id: p.id,
-          title: p.title || p.name,
+        const formatted = (data || []).map((p: any) => ({
+          id: p.id || p.product_id,
+          title: p.title || p.name || "Untitled",
           price: p.sale_price ? `NGN ${p.sale_price}` : `NGN ${p.price}`,
           originalPrice: p.sale_price ? `NGN ${p.price}` : null,
-          rating: 4.8, // Default rating since it's not in DB yet
+          rating: 4.8, 
           type: p.type === "service" ? "service" : "digital",
           category: p.category || p.attributes?.category || "General",
           description: p.description || "",
-          image_url: p.image_url || p.featured_image,
+          image_url: p.featured_image || p.image_url,
           badge: p.is_featured ? "FEATURED" : null,
           badgeColor: "bg-primary text-primary-foreground",
+          slug: p.slug, 
         }));
         setProducts(formatted);
       }
@@ -95,7 +93,7 @@ const Services = () => {
     if (sortBy === "Top Rated") return b.rating - a.rating;
     if (sortBy === "Price: Low to High") return parseFloat(a.price.replace(/[^0-9.]/g, "")) - parseFloat(b.price.replace(/[^0-9.]/g, ""));
     if (sortBy === "Price: High to Low") return parseFloat(b.price.replace(/[^0-9.]/g, "")) - parseFloat(a.price.replace(/[^0-9.]/g, ""));
-    return 0; // Default sort (Newest)
+    return 0;
   });
 
   const toggleWishlist = (id: string) => {
@@ -266,6 +264,7 @@ const Services = () => {
         open={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         product={quickViewProduct ? {
+          id: quickViewProduct.id,
           title: quickViewProduct.title,
           price: quickViewProduct.price,
           originalPrice: quickViewProduct.originalPrice,
@@ -273,6 +272,7 @@ const Services = () => {
           description: quickViewProduct.description,
           badge: quickViewProduct.badge,
           image_url: quickViewProduct.image_url,
+          slug: quickViewProduct.slug,
         } : undefined}
       />
     </div>

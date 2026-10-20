@@ -39,6 +39,7 @@ type FormState = {
   type: string;
   max_downloads: string;
   file_url: string;
+  is_featured: boolean;
 };
 
 const emptyForm: FormState = {
@@ -52,6 +53,7 @@ const emptyForm: FormState = {
   type: "digital",
   max_downloads: "5",
   file_url: "",
+  is_featured: false,
 };
 
 const slugify = (s: string) =>
@@ -94,6 +96,7 @@ export default function AdminProducts() {
       type: p.type || "digital",
       max_downloads: String((p.attributes as { max_downloads?: number } | null)?.max_downloads ?? 5),
       file_url: (p.attributes as { file_url?: string } | null)?.file_url ?? "",
+      is_featured: (p.attributes as { is_featured?: boolean } | null)?.is_featured ?? false,
     });
     setOpen(true);
   };
@@ -115,6 +118,7 @@ export default function AdminProducts() {
         category: form.category || null,
         max_downloads: Number(form.max_downloads) || 0,
         file_url: form.file_url || null,
+        is_featured: form.is_featured,
       },
       is_active: true,
       user_id: user.id,
@@ -245,6 +249,26 @@ export default function AdminProducts() {
                 <Input value={form.file_url} onChange={(e) => setForm({ ...form, file_url: e.target.value })} />
               </div>
             </div>
+
+            {/* ✅ ADDED: The "Feature on Homepage" Checkbox */}
+            <div className="flex items-center gap-3 p-4 border border-border rounded-lg bg-muted/30 mt-2">
+              <input
+                type="checkbox"
+                id="is_featured"
+                checked={form.is_featured}
+                onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
+                className="h-5 w-5 accent-secondary rounded cursor-pointer"
+              />
+              <div>
+                <Label htmlFor="is_featured" className="text-sm font-semibold cursor-pointer">
+                  Feature on Homepage
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Check this to display the product in the "Premium Services" section on the homepage.
+                </p>
+              </div>
+            </div>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
