@@ -16,6 +16,7 @@ interface QuickViewModalProps {
     badge?: string;
     image_url?: string | null;
     slug?: string;
+    category?: string; 
   };
 }
 
@@ -34,7 +35,6 @@ const QuickViewModal = ({ open, onClose, product }: QuickViewModalProps) => {
     onClose();
   };
 
-  
   const shortDescription = product.description.length > 150 
     ? product.description.substring(0, 150) + "..." 
     : product.description;
@@ -87,20 +87,18 @@ const QuickViewModal = ({ open, onClose, product }: QuickViewModalProps) => {
                   <span className="text-2xl font-bold text-foreground font-body">{product.price}</span>
                 </div>
 
-                {/* Short description with Read More link */}
-                <p className="text-muted-foreground font-body text-sm leading-relaxed mb-4">
-                  {shortDescription}
+                <p className="text-muted-foreground font-body text-sm leading-relaxed mb-4 line-clamp-3">
+                  {product.description}
                 </p>
                 
-                {product.slug && (
-                  <Link 
-                    to={`/product/${product.slug}`}
-                    onClick={onClose}
-                    className="text-sm font-semibold text-secondary hover:underline inline-block mb-6"
-                  >
-                    Read More →
-                  </Link>
-                )}
+                {/* ✅ FIX: Link to the Product Details Page */}
+                <Link 
+                  to={`/product-service/${product.id}`}
+                  onClick={onClose}
+                  className="text-sm font-semibold text-secondary hover:underline inline-block mb-6"
+                >
+                  Read More →
+                </Link>
 
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex items-center border border-border rounded-full">

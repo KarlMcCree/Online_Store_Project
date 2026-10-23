@@ -36,10 +36,13 @@ type FormState = {
   sale_price: string;
   image_url: string;
   category: string;
+  parent_category: string; 
   type: string;
   max_downloads: string;
   file_url: string;
   is_featured: boolean;
+  google_form_url: string;
+  rich_content: string;
 };
 
 const emptyForm: FormState = {
@@ -50,10 +53,13 @@ const emptyForm: FormState = {
   sale_price: "",
   image_url: "",
   category: "",
+  parent_category: "", 
   type: "digital",
   max_downloads: "5",
   file_url: "",
   is_featured: false,
+  google_form_url: "",
+  rich_content: "",
 };
 
 const slugify = (s: string) =>
@@ -93,10 +99,13 @@ export default function AdminProducts() {
       sale_price: String(p.sale_price ?? ""),
       image_url: p.featured_image ?? "",
       category: (p.attributes as { category?: string } | null)?.category ?? "",
+      parent_category: (p.attributes as { parent_category?: string } | null)?.parent_category ?? "", // ✅ NEW FIELD
       type: p.type || "digital",
       max_downloads: String((p.attributes as { max_downloads?: number } | null)?.max_downloads ?? 5),
       file_url: (p.attributes as { file_url?: string } | null)?.file_url ?? "",
       is_featured: (p.attributes as { is_featured?: boolean } | null)?.is_featured ?? false,
+      google_form_url: (p.attributes as { google_form_url?: string } | null)?.google_form_url ?? "",
+      rich_content: (p.attributes as { rich_content?: string } | null)?.rich_content ?? "",
     });
     setOpen(true);
   };
@@ -116,9 +125,12 @@ export default function AdminProducts() {
       type: form.type || "digital",
       attributes: {
         category: form.category || null,
+        parent_category: form.parent_category || null, // ✅ NEW FIELD
         max_downloads: Number(form.max_downloads) || 0,
         file_url: form.file_url || null,
         is_featured: form.is_featured,
+        google_form_url: form.google_form_url || null, 
+        rich_content: form.rich_content || null,
       },
       is_active: true,
       user_id: user.id,
@@ -235,6 +247,17 @@ export default function AdminProducts() {
                 <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
               </div>
             </div>
+            {/* ✅ NEW FIELD FOR SUB-SERVICES */}
+            <div className="p-4 border border-border rounded-lg bg-muted/30">
+              <Label>Parent Category (Sub-Services only)</Label>
+              <Input 
+                placeholder="e.g. VPI-Canada" 
+                value={form.parent_category} 
+                onChange={(e) => setForm({ ...form, parent_category: e.target.value })} 
+              />
+              <p className="text-xs text-muted-foreground mt-1">If this is a sub-service (like Permanent Residence), type the main category here.</p>
+            </div>
+
             <div>
               <Label>Image URL</Label>
               <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
@@ -249,8 +272,28 @@ export default function AdminProducts() {
                 <Input value={form.file_url} onChange={(e) => setForm({ ...form, file_url: e.target.value })} />
               </div>
             </div>
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <Label>Google Form URL (Sub-products)</Label>
+                <Input
+                  placeholder="https://forms.gle/..."
+                  value={form.google_form_url}
+                  onChange={(e) => setForm({ ...form, google_form_url: e.target.value })}
+                  />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <Label>Rich Content (Read More HTML)</Label>
+                <Textarea
+                  rows={6}
+                  placeholder="<h1>Why choose this?</h1><p>Write your details here...</p>"
+                  value={form.rich_content}
+                  onChange={(e) => setForm({ ...form, rich_content: e.target.value })}
+                />
+              </div>
+            </div>
 
-            {/* ✅ ADDED: The "Feature on Homepage" Checkbox */}
             <div className="flex items-center gap-3 p-4 border border-border rounded-lg bg-muted/30 mt-2">
               <input
                 type="checkbox"

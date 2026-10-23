@@ -62,7 +62,13 @@ const Dashboard = () => {
         toast({ title: "Couldn't load products", description: error.message, variant: "destructive" });
         setDbProducts([]);
       } else {
-        setDbProducts(data || []);
+
+        const subServicesOnly = (data || []).filter((p: any) => {
+          const isSubService = p.attributes?.parent_category;
+          return !!isSubService;
+        });
+
+        setDbProducts(subServicesOnly);
       }
       setProductsLoading(false);
     };
@@ -495,7 +501,7 @@ const ProductsPanel = ({ products, loading }: { products: any[]; loading: boolea
           {products.map((p) => (
             <div
               key={p.id}
-              onMouseEnter={() => trackInteraction(p)}
+              onClick={() => trackInteraction(p)}
               className="bg-background border border-border rounded-xl p-5 group hover:border-secondary transition-colors"
             >
               <div className="aspect-[4/3] rounded-lg bg-gradient-to-br from-primary/5 to-secondary/10 flex items-center justify-center mb-4">

@@ -23,6 +23,10 @@ import NotFound from "./pages/NotFound.tsx";
 import ProductDetail from "@/pages/ProductDetail";
 import UpdatePassword from "@/pages/UpdatePassword";
 
+// 👇 Import your new pages
+import CategoryPage from "@/pages/Services/CategoryPage";
+import SubProductDetails from "@/pages/Services/SubProductDetails";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -48,7 +52,8 @@ const App = () => (
                 <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>} />
                 <Route path="/product/:slug" element={<ProductDetail />} />
                 <Route path="/update-password" element={<UpdatePassword />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="/services/:categoryId" element={<CategoryPage />} />
+                <Route path="/product-service/:productId" element={<SubProductDetails />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <AuthModal />

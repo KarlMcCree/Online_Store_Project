@@ -20,7 +20,7 @@ type Product = {
   saleRibbon?: string;
   slug?: string;
   category?: string;
-  image_url?: string; // <-- ADDED
+  image_url?: string; 
 };
 
 const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView: (p: Product) => void }) => {
@@ -38,7 +38,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView: 
     <div className="group cursor-pointer">
       <div className="relative bg-muted rounded-lg overflow-hidden aspect-[3/4] mb-4">
         
-        {/*  Render the image if it exists, otherwise show emoji */}
+        {/* Render the image if it exists, otherwise show emoji */}
         {product.image_url ? (
           <img 
             src={product.image_url} 
@@ -116,9 +116,10 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView: 
             <span className="text-sm text-muted-foreground line-through">{product.originalPrice}</span>
           )}
         </div>
-        {product.slug && (
+        {/* ✅ FIXED: Now links to the Product Details page */}
+        {product.id && (
           <Link
-            to={`/product/${product.slug}`}
+            to={`/product-service/${product.id}`}
             className="text-xs text-secondary hover:underline font-body"
           >
             Read More →
@@ -143,11 +144,18 @@ const FeaturedProducts = () => {
           .select("*")
           .eq("is_active", true)
           .order("created_at", { ascending: false })
-          .limit(8);
+          .limit(20);
 
         if (error) throw error;
 
-        const mappedProducts: Product[] = (data || []).map((p) => ({
+        // ✅ 1. Filter out sub-services
+        const mainProducts = (data || []).filter((p: any) => {
+          const isSubService = p.attributes?.parent_category;
+          return !isSubService;
+        });
+
+        // ✅ 2. Map over mainProducts, not data!
+        const mappedProducts: Product[] = mainProducts.slice(0, 8).map((p) => ({
           product_id: p.product_id,
           id: p.product_id,
           title: p.name,
@@ -260,6 +268,9 @@ const FeaturedProducts = () => {
           rating: quickViewProduct.rating,
           description: quickViewProduct.description,
           badge: quickViewProduct.badge,
+          image_url: quickViewProduct.image_url,
+          slug: quickViewProduct.slug,
+          category: quickViewProduct.category,
         } : undefined}
       />
     </>
